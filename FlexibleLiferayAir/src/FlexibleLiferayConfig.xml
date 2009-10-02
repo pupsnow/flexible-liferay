@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<objects xmlns="http://www.pranaframework.org/objects" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.pranaframework.org/objects
+                             http://www.pranaframework.org/schema/objects/prana-objects-0.6.xsd">
+
+    
+    <object id="liferayServerConfig" class="org.integratedsemantics.flexibleliferay.model.LiferayServerConfig">
+
+        <property name="portalUrl" value="http://localhost:8080/"/>
+        
+        <property name="defaultEmailAddress" value="test@liferay.com"/>
+        <property name="defaultPassword" value="test"/>
+
+        <!-- property name="defaultEmailAddress" value="bruno@7cogs.com"/-->
+        <!-- property name="defaultPassword" value="bruno"/-->
+        
+           
+    </object>
+
+
+</objects>

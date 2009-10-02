@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" title="Sign In"
+	width="400" height="300" styleName="dialog"
+	showCloseButton="true" close="onClose(event)" creationComplete="init(event)">
+
+<mx:Style source="/assets/dialog.css"/>
+
+<mx:Script>
+	<![CDATA[
+	import mx.managers.PopUpManager;
+	
+	public var emailAddress:String = "";
+	public var password:String = "";
+
+	private function init(event:Event):void
+	{
+		emailInput.text = emailAddress;
+		passwordInput.text = password;	
+	}
+	private function onSignIn(event:Event):void
+	{
+		emailAddress = emailInput.text;
+		password = passwordInput.text;	
+
+		if ( (emailAddress != "") && (password != "") )
+		{
+			mx.managers.PopUpManager.removePopUp(this);
+			dispatchEvent(new LiferayLoginEvent(LiferayLoginEvent.LOGIN, emailAddress, password));
+		}
+	}
+	
+	private function onCancel(event:Event):void
+	{
+		mx.managers.PopUpManager.removePopUp(this);		
+	}
+
+	private function onClose(event:Event):void
+	{
+		mx.managers.PopUpManager.removePopUp(this);		
+	}
+				
+	]]>
+</mx:Script>
+
+<mx:Metadata>
+   [Event(name="liferayLogin",type="org.integratedsemantics.flexibleliferay.login.LiferayLoginEvent")]   
+</mx:Metadata>	
+
+<mx:Form styleName="mainArea" width="100%">
+	<mx:FormItem label="Email Address" styleName="mainArea" width="100%">
+		<mx:TextInput id="emailInput" width="100%" styleName="input"/>		
+	</mx:FormItem>
+	<mx:FormItem label="Password" styleName="mainArea" width="100%">
+		<mx:TextInput id="passwordInput" displayAsPassword="true" width="100%" styleName="input"/>		
+	</mx:FormItem>
+</mx:Form>
+	
+<mx:HBox styleName="buttonArea">
+	<mx:Button id="okBtn" label="Sign In" click="onSignIn(event)"/>
+	<mx:Button id="cancelBtn" label="Cancel" click="onCancel(event)"/>
+</mx:HBox>
+	
+</mx:TitleWindow>
