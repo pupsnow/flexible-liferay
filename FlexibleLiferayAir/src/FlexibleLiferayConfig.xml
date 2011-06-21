@@ -9,7 +9,7 @@
 
         <property name="portalUrl" value="http://localhost:8080/"/>
 
-        <property name="webDir" value="flexible-liferay"/>
+        <property name="webDir" value="flexible-liferay-web"/>
                 
         <property name="defaultEmailAddress" value="test@liferay.com"/>
         <property name="defaultPassword" value="test"/>     
