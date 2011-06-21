@@ -1,53 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
 <app:FlexibleLiferayAirAppBase title="FlexibleLiferay" 
-    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    xmlns:fx="http://ns.adobe.com/mxml/2009" 
+    xmlns:s="library://ns.adobe.com/flex/spark" 
+    xmlns:mx="library://ns.adobe.com/flex/mx" 
     xmlns:app="org.integratedsemantics.flexibleliferayair.app.*"
-    horizontalAlign="left"
-    width="1000" height="700"
-    paddingBottom="0" paddingLeft="0" paddingRight="0" paddingTop="0"
+    minWidth="700" minHeight="500" width="1000" height="700" 
+    showStatusBar="false"
     applicationComplete="onApplicationComplete()">
 
-    <mx:Style source="flexibleliferayair.css" />
+    <fx:Style source="flexibleliferay.css" />    
+    <fx:Style source="flexibleliferayair.css" />
     
-    <mx:RemoteObject id="placesService" result="getPlacesResult(event)"
-        endpoint="/messagebroker/amf" destination="PlacesService"/>
+    <fx:Declarations>        
+        <mx:RemoteObject id="placesService" result="getPlacesResult(event)"
+            destination="PlacesService"/>
+    
+        <mx:RemoteObject id="layoutService" result="getLayoutsResult(event)"
+            destination="LayoutService"/>
+    
+        <mx:RemoteObject id="userService" result="loginResult(event)"
+            destination="UserService"/>
+    </fx:Declarations>
 
-    <mx:RemoteObject id="layoutService" result="getLayoutsResult(event)"
-        endpoint="/messagebroker/amf" destination="LayoutService"/>
-
-    <mx:RemoteObject id="userService" result="loginResult(event)"
-        endpoint="/messagebroker/amf" destination="UserService"/>
-
-    <mx:VBox id="vbox" width="100%" height="100%">
-        <mx:ApplicationControlBar dock="true" width="100%" height="30" verticalAlign="middle">
-            <mx:Button id="cascadeBtn" label="Cascade" click="cascade()" />
-            <mx:Button id="tileBtn" label="Tile" click="tile()" />
-            <mx:MenuBar id="placesMenuBar" labelField="name"/>
-            <mx:Button id="addPageBtn" label="+ Page"/>
-            <mx:Button id="addAppBtn" label="+ App"/>
-            <mx:Button id="controlPanelBtn" label="Control Panel"/>  
-            <mx:Button id="signInBtn" label="Sign In" click="onClickSignIn(event)"/>            
-            <mx:Button id="signOutBtn" label="Sign Out" visible="false" includeInLayout="false" 
-            	click="onClickSignOut(event)"/>            
-            <mx:Label id="userLabel" text="" />          
-        </mx:ApplicationControlBar>
-        <mx:ViewStack id="modeViewStack" width="100%" height="100%">
+    <app:layout>
+        <s:VerticalLayout horizontalAlign="left"
+            paddingLeft="4" paddingRight="4" paddingBottom="4" paddingTop="4"/>
+    </app:layout> 
+    
+    <app:states>
+        <s:State name="MainViewState"/>
+    </app:states>
+    
+    <s:HGroup width="100%" height="30" verticalAlign="middle">
+        <s:Button id="cascadeBtn" label="Cascade" click="cascade()" />
+        <s:Button id="tileBtn" label="Tile" click="tile()" />
+        <mx:MenuBar id="placesMenuBar" labelField="name"/>
+        <s:Button id="addPageBtn" label="+ Page"/>
+        <s:Button id="addAppBtn" label="+ App"/>
+        <s:Button id="controlPanelBtn" label="Control Panel"/>  
+        <s:Button id="signInBtn" label="Sign In" click="onClickSignIn(event)"/>            
+        <s:Button id="signOutBtn" label="Sign Out" visible="false" includeInLayout="false" 
+        	click="onClickSignOut(event)"/>            
+        <s:Label id="userLabel" text="" />          
+    </s:HGroup>
         
-            <!-- portal dashboard view -->
-            <mx:VBox width="100%" height="100%">
-                <mx:TabBar
-                    id="tabBar"
-                    itemClick="onItemClickTabBar(event)"
-                    height="35" 
-                    dataProvider="viewStack"
-                    styleName="viewTabs" tabStyleName="viewTab" />
-                <mx:ViewStack
-                    id="viewStack"
-                    paddingTop="0"
-                    width="100%" height="100%" />   
-            </mx:VBox>
-            
-        </mx:ViewStack>         
-    </mx:VBox> 
     
+    <s:TabBar
+        id="tabBar"
+        change="onChangeTabBar(event)"
+        height="35" styleName="viewTabs" 
+        dataProvider="{viewStack}" />
+    <mx:ViewStack
+        id="viewStack"
+        paddingTop="0"
+        width="100%" height="100%" />   
+        
 </app:FlexibleLiferayAirAppBase>
