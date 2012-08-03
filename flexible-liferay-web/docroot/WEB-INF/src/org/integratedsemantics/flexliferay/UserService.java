@@ -42,9 +42,11 @@ public class UserService
 
 		Map<String, String[]> headerMap = new HashMap<String, String[]>();
 		Map<String, String[]> parameterMap = request.getParameterMap();
-
+		Map<String,Object> resultsMap = new HashMap<String, Object>();
+		
+		// authenticateByEmailAddress now needs a resultsMap too in liferay 6.1
 		authResult = UserLocalServiceUtil.authenticateByEmailAddress(company.getCompanyId(),
-			userEmail, password, headerMap, parameterMap);
+			userEmail, password, headerMap, parameterMap, resultsMap);
 
 		if (authResult == Authenticator.SUCCESS)
 		{

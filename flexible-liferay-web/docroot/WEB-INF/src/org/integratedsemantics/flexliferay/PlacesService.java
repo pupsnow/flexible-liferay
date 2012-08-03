@@ -1,9 +1,12 @@
 package org.integratedsemantics.flexliferay;
 
+import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.model.Group;
 import com.liferay.portal.model.User;
+import com.liferay.portal.security.permission.PermissionChecker;
+import com.liferay.portal.security.permission.PermissionCheckerFactoryUtil;
+import com.liferay.portal.security.permission.PermissionThreadLocal;
 import com.liferay.portal.service.UserLocalServiceUtil;
-import com.liferay.portal.util.WebKeys;
 
 import flex.messaging.FlexContext;
 
@@ -26,7 +29,13 @@ public class PlacesService
 
 		User user = UserLocalServiceUtil.getUserById(userId);
 
-		List<Group> myPlaces = user.getMyPlaces(100);
+		// needed to add permission checker init for liferay 6.1
+		PermissionChecker permissionChecker = PermissionCheckerFactoryUtil.create(user, true);
+		PermissionThreadLocal.setPermissionChecker(permissionChecker);				
+		
+		//List<Group> myPlaces = user.getMyPlaces(100);
+		// for 6.1 use getMySites
+		List<Group> myPlaces = user.getMySites(false, 100);
 
         PlaceVO[] places = new PlaceVO[myPlaces.size()];
         int i = 0;

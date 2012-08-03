@@ -4,6 +4,7 @@ import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.model.Layout;
 import com.liferay.portal.model.Portlet;
+import com.liferay.portal.model.PortletApp;
 import com.liferay.portal.service.PortletLocalServiceUtil;
 
 import java.util.ArrayList;
@@ -21,6 +22,7 @@ public class LayoutVO
     public String typeSettings;
     public String friendlyUrl;
     public List<String> portletIds = new ArrayList<String>();
+    public List<String> contextPaths = new ArrayList<String>();
 
 
     public LayoutVO() {}
@@ -52,7 +54,11 @@ public class LayoutVO
 					if (portlet != null)
 					{
 						portletIds.add(portletId);
-					}
+						
+						PortletApp portletApp = portlet.getPortletApp();
+						String contextPath = portletApp.getContextPath();
+						contextPaths.add(contextPath);
+					}				
 				}
 			}
 		}

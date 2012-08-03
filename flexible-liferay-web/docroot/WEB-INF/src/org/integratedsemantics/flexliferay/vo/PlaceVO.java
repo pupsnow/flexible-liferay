@@ -6,7 +6,8 @@ import com.liferay.portal.service.OrganizationLocalServiceUtil;
 
 public class PlaceVO
 {
-    public boolean isCommunity;
+    //public boolean isCommunity;
+    public boolean isRegularSite;
     public boolean isOrganization;
     public boolean isUser;
     public int publicLayoutsPageCount;
@@ -21,7 +22,10 @@ public class PlaceVO
 
     public PlaceVO(Group group)
     {
-        this.isCommunity = group.isCommunity();
+        // this.isCommunity = group.isCommunity();
+    	// isCommunity deprecated, renamed isRegularSite in liferay 6.1
+        this.isRegularSite = group.isRegularSite();
+        
         this.isOrganization = group.isOrganization();
         this.isUser = group.isUser();
 		this.publicLayoutsPageCount = group.getPublicLayoutsPageCount();

@@ -1,8 +1,8 @@
 package org.integratedsemantics.flexliferay;
 
+import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.model.Layout;
 import com.liferay.portal.service.LayoutLocalServiceUtil;
-import com.liferay.portal.util.WebKeys;
 
 import flex.messaging.FlexContext;
 
