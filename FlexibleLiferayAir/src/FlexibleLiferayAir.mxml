@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<app:FlexibleLiferayAirAppBase title="FlexibleLiferay" 
+<app:FlexibleLiferayAirAppBase title="FlexibleDashboard+Liferay" 
     xmlns:fx="http://ns.adobe.com/mxml/2009" 
     xmlns:s="library://ns.adobe.com/flex/spark" 
     xmlns:mx="library://ns.adobe.com/flex/mx" 
@@ -37,7 +37,7 @@
         <mx:MenuBar id="placesMenuBar" labelField="name"/>
         <s:Button id="addPageBtn" label="+ Page"/>
         <s:Button id="addAppBtn" label="+ App"/>
-        <s:Button id="controlPanelBtn" label="Control Panel"/>  
+		<!-- s:Button id="controlPanelBtn" label="Control Panel"/-->  
         <s:Button id="signInBtn" label="Sign In" click="onClickSignIn(event)"/>            
         <s:Button id="signOutBtn" label="Sign Out" visible="false" includeInLayout="false" 
         	click="onClickSignOut(event)"/>            

@@ -22,19 +22,19 @@
 
 .maximizeRestoreButton
 {
-	up-skin:        	Embed("/assets/maximize_up.png");
-	over-skin:      	Embed("/assets/maximize_over.png");
-	down-skin:      	Embed("/assets/maximize_up.png");
-	selected-up-skin:   Embed("/assets/restore_up.png");
-	selected-over-skin: Embed("/assets/restore_over.png");
-	selected-down-skin: Embed("/assets/restore_up.png");
+	up-skin:        	Embed("assets/maximize_up.png");
+	over-skin:      	Embed("assets/maximize_over.png");
+	down-skin:      	Embed("assets/maximize_up.png");
+	selected-up-skin:   Embed("assets/restore_up.png");
+	selected-over-skin: Embed("assets/restore_over.png");
+	selected-down-skin: Embed("assets/restore_up.png");
 }
 
 .minimizeButton
 {
-	up-skin:        Embed("/assets/minimize_up.png");
-	over-skin:      Embed("/assets/minimize_over.png");
-	down-skin:      Embed("/assets/minimize_up.png");
+	up-skin:        Embed("assets/minimize_up.png");
+	over-skin:      Embed("assets/minimize_over.png");
+	down-skin:      Embed("assets/minimize_up.png");
 }
 
 pod|Pod
@@ -88,18 +88,18 @@ mdi|MDIWindow
 
 .leftArrowButton
 {
-	up-skin:		Embed("/assets/left_arrow_up.gif");
-	over-skin:		Embed("/assets/left_arrow_over.gif");
-	down-skin:		Embed("/assets/left_arrow_up.gif");
-	disabled-skin:	Embed("/assets/left_arrow_disabled.gif");
+	up-skin:		Embed("assets/left_arrow_up.gif");
+	over-skin:		Embed("assets/left_arrow_over.gif");
+	down-skin:		Embed("assets/left_arrow_up.gif");
+	disabled-skin:	Embed("assets/left_arrow_disabled.gif");
 }
 
 .rightArrowButton
 {
-	up-skin:		Embed("/assets/right_arrow_up.gif");
-	over-skin:		Embed("/assets/right_arrow_over.gif");
-	down-skin:		Embed("/assets/right_arrow_up.gif");
-	disabled-skin:	Embed("/assets/right_arrow_disabled.gif");
+	up-skin:		Embed("assets/right_arrow_up.gif");
+	over-skin:		Embed("assets/right_arrow_over.gif");
+	down-skin:		Embed("assets/right_arrow_up.gif");
+	disabled-skin:	Embed("assets/right_arrow_disabled.gif");
 }
 
 

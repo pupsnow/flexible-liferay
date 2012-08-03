@@ -7,7 +7,7 @@
     
     <object id="liferayServerConfig" class="org.integratedsemantics.flexibleliferay.model.LiferayServerConfig">
 
-        <property name="portalUrl" value="http://localhost:8080/"/>
+        <property name="portalUrl" value="http://localhost:8080"/>
 
         <property name="webDir" value="flexible-liferay-web"/>
                 
@@ -15,6 +15,27 @@
         <property name="defaultPassword" value="test"/>     
            
     </object>
+
+
+	<!-- for flexibledashboard+liferay using gridpods / chartgridpods with datasource config like in flexibledashboard/src/spring-actionscript/application-context.xml + gridpod-context1.xml etc -->
+	<object id="channelSet" class="mx.messaging.ChannelSet">
+	    <method-invocation name="addChannel">
+	        <arg>
+	            <object id="amfChannel" class="mx.messaging.channels.AMFChannel">
+	                <property name="url" value="http://localhost:8400/samples/messagebroker/amf"/>
+	                <property name="id" value="my-amf"/>
+	            </object>
+	        </arg>
+	    </method-invocation>
+	    <method-invocation name="addChannel">
+	        <arg>
+	            <object id="httpChannel" class="mx.messaging.channels.HTTPChannel">
+	                <property name="url" value="http://localhost:8400/samples/messagebroker/http"/>
+	                <property name="id" value="my-http"/>
+	            </object>
+	        </arg>
+	    </method-invocation>
+	</object>
 
 
 </objects>

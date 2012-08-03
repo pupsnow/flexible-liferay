@@ -3,7 +3,7 @@ package org.integratedsemantics.flexibleliferay.vo
     [RemoteClass(alias="org.integratedsemantics.flexliferay.vo.PlaceVO")]    
     public class PlaceVO
     {
-        public var isCommunity:Boolean;
+        public var isRegularSite:Boolean;
         public var isOrganization:Boolean;
         public var isUser:Boolean;
         public var publicLayoutsPageCount:int;

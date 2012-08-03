@@ -12,5 +12,6 @@ package org.integratedsemantics.flexibleliferay.vo
         public var typeSettings:String;
         public var friendlyUrl:String;
         public var portletIds:ArrayCollection;
+		public var contextPaths:ArrayCollection;
     }
 }

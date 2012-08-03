@@ -1,22 +1,41 @@
 package org.integratedsemantics.flexibleliferayair.app
 {
 	import com.esria.samples.dashboard.managers.PodLayoutManager;
+	import com.esria.samples.dashboard.view.IPodContentBase;	
+	import com.esria.samples.dashboard.view.PieChartContent;
 	import com.esria.samples.dashboard.view.Pod;
+	import com.esria.samples.dashboard.view.PodContentBase;
 	
 	import flash.events.Event;
+	import flash.system.ApplicationDomain;	
 	import flash.utils.Dictionary;
 	
 	import flexlib.mdi.containers.MDICanvas;
+	import flexlib.mdi.containers.MDIWindow;
+	import flexlib.mdi.managers.MDIManager;
 	
+	import mx.charts.chartClasses.DataTip;	
 	import mx.containers.ViewStack;
+	import mx.controls.Alert;
 	import mx.controls.MenuBar;
+	import mx.events.ModuleEvent;
+	import mx.modules.IModuleInfo;
+	import mx.modules.Module;
+	import mx.modules.ModuleManager;	
+	import mx.core.IVisualElement;
 	import mx.events.MenuEvent;
 	import mx.managers.PopUpManager;
 	import mx.messaging.ChannelSet;
 	import mx.messaging.channels.AMFChannel;
+	import mx.rpc.events.FaultEvent;
 	import mx.rpc.events.ResultEvent;
-	import mx.rpc.remoting.mxml.RemoteObject;
-	
+	import mx.rpc.http.HTTPService;
+	import mx.rpc.remoting.mxml.RemoteObject;	
+
+	import org.integratedsemantics.flexibledashboard.data.RemoteObjectDataService;
+	import org.integratedsemantics.flexibledashboard.data.SoapDataService;
+	import org.integratedsemantics.flexibledashboard.data.XmlDataService;
+
 	import org.integratedsemantics.flexibleliferay.login.LiferayLogin;
 	import org.integratedsemantics.flexibleliferay.login.LiferayLoginEvent;
 	import org.integratedsemantics.flexibleliferay.model.LiferayServerConfig;
@@ -24,16 +43,21 @@ package org.integratedsemantics.flexibleliferayair.app
 	import org.integratedsemantics.flexibleliferay.vo.PlaceVO;
 	import org.integratedsemantics.flexibleliferay.vo.UserVO;
 	import org.integratedsemantics.flexibleliferayair.pod.LiferayHtmlPod;
+
 	import org.springextensions.actionscript.context.support.FlexXMLApplicationContext;
+	import org.springextensions.actionscript.module.ISASModule;		
 	
 	import spark.components.Button;
 	import spark.components.Label;
 	import spark.components.TabBar;
 	import spark.components.WindowedApplication;
 	import spark.events.IndexChangeEvent;
-
+	
+	
 	public class FlexibleLiferayAirAppBase extends WindowedApplication
-	{		
+	{
+		// flexible dashboard vars
+		
 		[Bindable]
 		public var viewStack:ViewStack;
 
@@ -55,17 +79,42 @@ package org.integratedsemantics.flexibleliferayair.app
 		// Array of PodLayoutManagers
 		private var podLayoutManagers:Array = new Array();
 		
+		// Stores the xml data keyed off of a PodLayoutManager.
+		//protected var podDataDictionary:Dictionary = new Dictionary();
+	
+		// Stores PodLayoutManagers keyed off of a Pod.
+		// Used for podLayoutManager calls after pods have been created for the first time.
+		// Also, used for look-ups when saving pod content ViewStack changes.
+		//protected var podHash:Object = new Object();
+				
+		private var _moduleConfigList:Dictionary = new Dictionary();
+		private var _moduleLayoutMgrList:Dictionary = new Dictionary();
+		
+		private var numPodsDoneInView:Number;
+		private var numPodsInView:Number;  
+			
+		// current tab / viewstack index
+		private var viewIndex:int = 0;
+
+		// force compiler to include these classes
+		private var remoteObjectDataService:RemoteObjectDataService;
+		private var soapDataService:SoapDataService;
+		private var xmlDataService:XmlDataService;
+
+		private var _applicationContext:FlexXMLApplicationContext;		
+
+		
+		// flexible liferay specific vars
+		
+		
 		// Stores the layout keyed off of a PodLayoutManager.
 		private var layoutForLayoutMgrMap:Dictionary = new Dictionary();
 		
 		// Stores PodLayoutManagers keyed off of a Pod.
 		// Used for podLayoutManager calls after pods have been created for the first time.
-		private var layoutMgrForPodMap:Object = new Object();
+		private var layoutMgrForPodMap:Object = new Object();		
 		
-		// current tab / viewstack index
-		private var viewIndex:int = 0;
-
-        // liferay places layouts
+		// liferay places layouts
         private var allLayouts:Array = new Array();
 
 		// login dialog displayed when click sign in button
@@ -83,11 +132,12 @@ package org.integratedsemantics.flexibleliferayair.app
 
         // liferay  places menu data
         private var rootMenuItemData:Object = new Object();
-
-		private var applicationContext:FlexXMLApplicationContext;		
-		private var liferayServerConfig:LiferayServerConfig;
-        
-		          
+		
+		private var liferayServerConfig:LiferayServerConfig;       		
+				
+		private var managerForPod:PodLayoutManager;
+		
+		
 		public function FlexibleLiferayAirAppBase()
 		{
 			super();            
@@ -105,36 +155,62 @@ package org.integratedsemantics.flexibleliferayair.app
                 			                       
 			this.currentState = MAIN_VIEW_STATE;    
 			
-			loadConfig();			
+			// spring actionscript config
+			_applicationContext = new FlexXMLApplicationContext("FlexibleLiferayConfig.xml");
+			_applicationContext.addEventListener(Event.COMPLETE, onLoadContextComplete);
+			_applicationContext.load();                                          
         }
 
-		private function loadConfig():void
-		{
-			// spring actionscript config
-			applicationContext = new FlexXMLApplicationContext("FlexibleLiferayConfig.xml");
-			applicationContext.addEventListener(Event.COMPLETE, onLoadContextComplete);
-			applicationContext.load();                                          
-		}
-		
 		private function onLoadContextComplete(event:Event):void
 		{
-			liferayServerConfig = applicationContext.getObject("liferayServerConfig"); 
+			liferayServerConfig = _applicationContext.getObject("liferayServerConfig"); 
 			
 			var baseUrl:String = liferayServerConfig.portalUrl; 
 			
 			var channelSet:ChannelSet = new ChannelSet();
 			
 			// setup a channel for remoting to liferay via blazeds in liferay root
-			var channelUrl:String = baseUrl + liferayServerConfig.webDir + "/messagebroker/amf";
+			var channelUrl:String = baseUrl + "/" + liferayServerConfig.webDir + "/messagebroker/amf";
 			var channelId:String = "my-amf";
 			var channel:AMFChannel = new AMFChannel(channelId, channelUrl);            
 			channelSet.addChannel(channel);
 			
 			placesService.channelSet = channelSet;        
 			layoutService.channelSet = channelSet;
-			userService.channelSet = channelSet;            
+			userService.channelSet = channelSet;      
 		}		
-		     		
+		     	
+		
+		protected function loadPodConfig(url:String):void
+		{
+			// Load pod.xml, which contains the pod config.
+			var httpService:HTTPService = new HTTPService();
+			httpService.url = url + "/pod.xml";
+			httpService.resultFormat = "e4x";
+			httpService.addEventListener(FaultEvent.FAULT, onFaultHttpService);
+			httpService.addEventListener(ResultEvent.RESULT, onResultHttpService);
+			httpService.send();			
+		}
+		
+		protected function onFaultHttpService(e:FaultEvent):void
+		{
+			Alert.show("Unable to load pod.xml.");
+		}
+		
+		protected function onResultHttpService(e:ResultEvent):void
+		{
+			var podConfig:XML = e.result as XML;			
+			
+			// load flex module for pod
+			var info:IModuleInfo = ModuleManager.getModule(podConfig.@module);
+			_moduleConfigList[info] = podConfig;
+			_moduleLayoutMgrList[info] = managerForPod;			
+			info.addEventListener(ModuleEvent.READY, handleModuleReady);
+			info.addEventListener(ModuleEvent.ERROR, handleModuleError);
+			info.load(new ApplicationDomain(ApplicationDomain.currentDomain));																	
+		}
+		
+		
 		protected function onChangeTabBar(e:IndexChangeEvent):void
 		{
 			var index:Number = e.newIndex;
@@ -149,29 +225,7 @@ package org.integratedsemantics.flexibleliferayair.app
 				addPods(podLayoutManagers[index]);
 			}
 		}
-						
-		// mdi
-		protected function tile():void
-		{
-		    var index:int = viewStack.selectedIndex;
-		    var mgr:PodLayoutManager = podLayoutManagers[index];
-			if (mgr != null)
-			{
-			    mgr.tile(false, 10);  
-			}
-		}
-        
-        // mdi
-        protected function cascade():void
-        {
-            var index:int = viewStack.selectedIndex;
-            var mgr:PodLayoutManager = podLayoutManagers[index];
-			if (mgr != null)
-			{
-           		mgr.cascade();
-			}
-        }
-            
+						            
         /**
          * Handle click on a My Places menu item
          * 
@@ -333,21 +387,21 @@ package org.integratedsemantics.flexibleliferayair.app
 			tabBar.selectedIndex = index;        
 		}		
 		
+		
 		// Adds the pods / portlets to a  tab view (liferay layout)
 		private function addPods(manager:PodLayoutManager):void
 		{
 			var layout:LayoutVO = layoutForLayoutMgrMap[manager];
 			var place:PlaceVO = idToPlaceVoMap[layout.groupId];
 			
-			var numPodsInView:int = layout.portletIds.length;            
+			numPodsDoneInView = 0;
+			numPodsInView =  layout.portletIds.length;
+			
 			
 			for (var i:Number = 0; i < numPodsInView; i++)
 			{
-				// create html pod without using flex module approach in flexibledashboardair
-				var podContent:LiferayHtmlPod = new LiferayHtmlPod();						
-				
-				podContent.portalUrl = liferayServerConfig.portalUrl;
-				
+				var podId:String = layout.portletIds[i];
+
 				var type:String = "web"; 
 				if (layout.isPrivate == true)
 				{
@@ -361,28 +415,101 @@ package org.integratedsemantics.flexibleliferayair.app
 					}
 				}
 				
-				podContent.portletUrl =  podContent.portalUrl + "widget/" + type + place.friendlyUrl + layout.friendlyUrl + "/-/" + layout.portletIds[i];
-				
-				var viewId:String = manager.id;
-				var podId:String = layout.portletIds[i];
-				
-				var pod:Pod = new Pod();
-				pod.id = podId;
-				pod.title = "Portlet";                                  
-				
-				pod.addElement(podContent);
-				
-				manager.addItemAt(pod, -1, false);			
-				
-				layoutMgrForPodMap[pod] = manager;														
+				if (podId.indexOf("flexpod") == -1)
+				{
+					// regular liferay portlet
+					
+					var pod:Pod = new Pod();
+					pod.id = podId;
+					pod.title = "Portlet";                                  
+
+					var podContent:LiferayHtmlPod = new LiferayHtmlPod();						
+					podContent.portalUrl = liferayServerConfig.portalUrl + "/";
+
+					podContent.portletUrl =  podContent.portalUrl + "widget/" + type + place.friendlyUrl + layout.friendlyUrl + "/-/" + layout.portletIds[i];
+					pod.addElement(podContent);
+										
+					manager.addItemAt(pod, -1, false);			
+					layoutMgrForPodMap[pod] = manager;
+					
+					numPodsDoneInView++;													
+				}
+				else
+				{
+					// all flex pod 
+					
+					var url:String =  liferayServerConfig.portalUrl + layout.contextPaths[i];
+					
+					// load pod.xml from portlet webapp dir
+					managerForPod = manager;
+					loadPodConfig(url);                              									
+				}
 			}
 			
 			// Delete the saved data.
 			delete layoutForLayoutMgrMap[manager];				
 			
-			// all pods complete so now the layout can be done correctly. 
-			layoutAfterCreationComplete(manager);				
+			if (numPodsDoneInView == numPodsInView)
+			{
+				// all pods complete so now the layout can be done correctly. 
+				layoutAfterCreationComplete(manager);				
+			}						
 		}
+								
+		private function handleModuleReady(event:ModuleEvent):void
+		{
+			var info:IModuleInfo = event.module;
+			
+			//var podContent:IPodContentBase = info.factory.create() as IPodContentBase;					
+			
+			var module:ISASModule = info.factory.create() as ISASModule;
+			//set the applicationContext property, inside the BasicSASModule this
+			//will automatically be set as the moduleApplicationContext's parent
+			module.applicationContext = _applicationContext;
+			(module as Module).data = info;		
+			var podContent:IPodContentBase = module as IPodContentBase;								
+			
+			var podConfig:XML = _moduleConfigList[info] as XML;
+			var manager:PodLayoutManager = _moduleLayoutMgrList[info];			
+			cleanupInfo(info);
+			
+			var viewId:String = manager.id;
+			var podId:String = podConfig.@id;
+			
+			podContent.properties = podConfig;
+			var pod:Pod = new Pod();
+			pod.id = podId;
+			pod.title = podConfig.@title;
+			
+			podContent.pod = pod;
+			podContent.podManager = manager;
+			
+			pod.addElement(podContent);
+			
+			manager.addItemAt(pod, -1, false);						
+			
+			layoutMgrForPodMap[pod] = manager;		
+			
+			numPodsDoneInView++;
+			if (numPodsDoneInView == numPodsInView)
+			{
+				// all pods complete so now the layout can be done correctly. 
+				layoutAfterCreationComplete(manager);				
+			}						
+		}
+		
+		private function handleModuleError(event:ModuleEvent):void
+		{
+			Alert.show(event.errorText);
+		}
+		
+		private function cleanupInfo(info:IModuleInfo):void 
+		{
+			delete _moduleConfigList[info];
+			delete _moduleLayoutMgrList[info];
+			info.removeEventListener(ModuleEvent.READY, handleModuleReady);
+			info.removeEventListener(ModuleEvent.ERROR, handleModuleError);
+		}		
 		
 		// Pod has been created so update the respective PodLayoutManager.
 		private function layoutAfterCreationComplete(manager:PodLayoutManager):void
@@ -390,6 +517,28 @@ package org.integratedsemantics.flexibleliferayair.app
 			manager.removeNullItems();
 			manager.tile(false, 10);
 			manager.updateLayout(false);			
+		}	
+		
+		// mdi
+		protected function tile():void
+		{
+			var index:int = viewStack.selectedIndex;
+			var mgr:PodLayoutManager = podLayoutManagers[index];
+			if (mgr != null)
+			{
+				mgr.tile(false, 10);  
+			}
+		}
+		
+		// mdi
+		protected function cascade():void
+		{
+			var index:int = viewStack.selectedIndex;
+			var mgr:PodLayoutManager = podLayoutManagers[index];
+			if (mgr != null)
+			{
+				mgr.cascade();
+			}
 		}		
 		
 	}
