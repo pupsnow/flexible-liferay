@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<pod
+    id="birt1"
+    type="birt-report"
+    title="BIRT Report"
+    module="org/integratedsemantics/flexibledashboardair/birt/BirtReportViewerAirPod.swf"
+    url="http://localhost:8400/birt-viewer/"
+    report="SalesInvoice.rptdesign"
+    />  

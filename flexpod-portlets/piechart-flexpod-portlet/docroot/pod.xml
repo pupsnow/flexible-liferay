@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<pod
+    id="charts4"
+    type="pieChart"
+    title="Revenue by Region"
+    module="com/esria/samples/dashboard/view/PieChartContent.swf"
+    dataSource="data/revenue_by_region.xml"
+    valueField="value"
+    categoryField="region"
+    dataTipUnitLabel="$*M"
+    dataTipLabelField="region"/>

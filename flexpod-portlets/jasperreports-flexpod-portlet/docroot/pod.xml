@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<pod
+    id="jasperreport1"
+    type="report"
+    title="JasperReports"
+    module="org/integratedsemantics/flexibledashboard/jasperreports/ReportPod.swf"
+    reporturl="/reports/WebappReport.jrpxml"                     
+    />

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<pod
+    id="olap1"
+    type="olap-grid"
+    title="OLAP Mondrian"
+    module="org/integratedsemantics/flexibledashboard/olap/OlapGridPod.swf"
+    url="http://localhost:8400/mondrian-embedded/xmla"
+    xmlaDataSource="Provider=Mondrian;DataSource=MondrianFoodMart;"
+    catalog="FoodMart"
+    />
+<!--pod
+    id="olap2"
+    type="olap-grid"
+    title="OLAP Pentaho"
+    module="org/integratedsemantics/flexibledashboard/olap/OlapGridPod.swf"
+    url="http://localhost:8080/pentaho/Xmla?userid=joe&amp;password=password"
+    xmlaDataSource="Provider=Mondrian;DataSource=Pentaho"
+    catalog="SteelWheels"
+    /-->

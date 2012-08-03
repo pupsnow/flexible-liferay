@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<pod
+    id="grid1"
+    type="grid"
+    title="Data Grid with gridpod-context1.xml"
+    module="org/integratedsemantics/flexibledashboard/grid/GridPod.swf"
+    contextFile="spring-actionscript/gridpod-context1.xml"
+    />  

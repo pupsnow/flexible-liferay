@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<pod
+    id="calendar1"
+    type="calendar"
+    title="Calendar"
+    module="org/integratedsemantics/flexibledashboard/calendar/CalendarPod.swf"
+    />  

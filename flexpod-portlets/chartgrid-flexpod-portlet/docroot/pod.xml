@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<pod
+    id="chartgrid1"
+    type="chartgrid"
+    title="Chart + Data Grid with chartgridpod-context.xml"
+    module="org/integratedsemantics/flexibledashboard/grid/ChartGridPod.swf"
+    valueField="price"
+    categoryField="name"            
+    contextFile="spring-actionscript/chartgridpod-context.xml"        
+    />  

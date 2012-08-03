@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<pod
+    id="pentaho1"
+    type="pentaho"
+    title="Pentaho"
+    module="org/integratedsemantics/flexibledashboard/pentaho/PentahoPod.swf"
+    />

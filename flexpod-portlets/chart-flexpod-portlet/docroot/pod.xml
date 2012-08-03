@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<pod
+    id="charts1"
+    type="chart"
+    title="Yearly Revenue"
+    module="com/esria/samples/dashboard/view/ChartContent.swf"
+    dataSource="data/revenue.xml"
+    selectedViewIndex="1"
+    valueField="value"
+    categoryField="month"
+    dataTipUnitLabel="$*M"
+    dataTipLabelField="month"/>
